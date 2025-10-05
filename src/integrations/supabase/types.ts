@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          city: string | null
+          created_at: string
+          creditor_name: string | null
+          debt_amount: number
+          email: string
+          has_bank_deposits: boolean | null
+          has_criminal_record: boolean | null
+          has_registered_organization: boolean | null
+          id: string
+          is_ceo_or_ip: boolean | null
+          is_inheriting: boolean | null
+          marital_status: string | null
+          minimum_payments_made: boolean | null
+          name: string
+          official_income: number | null
+          overdue_payments: string | null
+          phone: string
+          property_value: number | null
+          purchase_sales_3years: string | null
+          receives_benefits: boolean | null
+          spouse_property_value: number | null
+          spouse_purchase_sales_3years: string | null
+          stage: string
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          creditor_name?: string | null
+          debt_amount: number
+          email: string
+          has_bank_deposits?: boolean | null
+          has_criminal_record?: boolean | null
+          has_registered_organization?: boolean | null
+          id?: string
+          is_ceo_or_ip?: boolean | null
+          is_inheriting?: boolean | null
+          marital_status?: string | null
+          minimum_payments_made?: boolean | null
+          name: string
+          official_income?: number | null
+          overdue_payments?: string | null
+          phone: string
+          property_value?: number | null
+          purchase_sales_3years?: string | null
+          receives_benefits?: boolean | null
+          spouse_property_value?: number | null
+          spouse_purchase_sales_3years?: string | null
+          stage?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          creditor_name?: string | null
+          debt_amount?: number
+          email?: string
+          has_bank_deposits?: boolean | null
+          has_criminal_record?: boolean | null
+          has_registered_organization?: boolean | null
+          id?: string
+          is_ceo_or_ip?: boolean | null
+          is_inheriting?: boolean | null
+          marital_status?: string | null
+          minimum_payments_made?: boolean | null
+          name?: string
+          official_income?: number | null
+          overdue_payments?: string | null
+          phone?: string
+          property_value?: number | null
+          purchase_sales_3years?: string | null
+          receives_benefits?: boolean | null
+          spouse_property_value?: number | null
+          spouse_purchase_sales_3years?: string | null
+          stage?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

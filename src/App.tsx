@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import SalesFunnel from "./pages/SalesFunnel";
 import ClientCare from "./pages/ClientCare";
 import Clients from "./pages/Clients";
+import ClientDetail from "./pages/ClientDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/sales-funnel" element={<SalesFunnel />} />
             <Route path="/client-care" element={<ClientCare />} />
             <Route path="/clients" element={<Clients />} />
+            <Route path="/clients/:id" element={<ClientDetail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
