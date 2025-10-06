@@ -5,7 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Filter } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Search, Filter, Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -27,9 +36,17 @@ const statusColors: Record<string, string> = {
 
 export default function Clients() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newClient, setNewClient] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    debt_amount: "",
+  });
 
   useEffect(() => {
     fetchClients();
@@ -71,6 +88,47 @@ export default function Clients() {
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("ru-RU");
   };
+
+  const handleCreateClient = async () => {
+    if (!newClient.name || !newClient.phone || !newClient.email || !newClient.debt_amount) {
+      toast({
+        title: "Ошибка",
+        description: "Заполните все обязательные поля",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("clients").insert([
+        {
+          name: newClient.name,
+          phone: newClient.phone,
+          email: newClient.email,
+          debt_amount: parseFloat(newClient.debt_amount),
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Успешно",
+        description: "Клиент добавлен",
+      });
+
+      setIsDialogOpen(false);
+      setNewClient({ name: "", phone: "", email: "", debt_amount: "" });
+      fetchClients();
+    } catch (error) {
+      console.error("Error creating client:", error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось добавить клиента",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -78,7 +136,70 @@ export default function Clients() {
           <h2 className="text-3xl font-bold tracking-tight text-foreground">Все клиенты</h2>
           <p className="text-muted-foreground mt-1">Полный список клиентов и их текущий статус</p>
         </div>
-        <Button>Добавить клиента</Button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Добавить клиента
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Новый клиент</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="client_name">ФИО *</Label>
+                <Input
+                  id="client_name"
+                  value={newClient.name}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, name: e.target.value })
+                  }
+                  placeholder="Иванов Иван Иванович"
+                />
+              </div>
+              <div>
+                <Label htmlFor="client_phone">Телефон *</Label>
+                <Input
+                  id="client_phone"
+                  value={newClient.phone}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, phone: e.target.value })
+                  }
+                  placeholder="+7 (999) 123-45-67"
+                />
+              </div>
+              <div>
+                <Label htmlFor="client_email">Email *</Label>
+                <Input
+                  id="client_email"
+                  type="email"
+                  value={newClient.email}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, email: e.target.value })
+                  }
+                  placeholder="example@mail.ru"
+                />
+              </div>
+              <div>
+                <Label htmlFor="client_debt">Сумма долга (₽) *</Label>
+                <Input
+                  id="client_debt"
+                  type="number"
+                  value={newClient.debt_amount}
+                  onChange={(e) =>
+                    setNewClient({ ...newClient, debt_amount: e.target.value })
+                  }
+                  placeholder="500000"
+                />
+              </div>
+              <Button onClick={handleCreateClient} className="w-full">
+                Создать клиента
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
