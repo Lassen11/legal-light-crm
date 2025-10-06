@@ -17,6 +17,7 @@ export type Database = {
       clients: {
         Row: {
           city: string | null
+          comments: string | null
           created_at: string
           creditor_name: string | null
           debt_amount: number
@@ -45,6 +46,7 @@ export type Database = {
         }
         Insert: {
           city?: string | null
+          comments?: string | null
           created_at?: string
           creditor_name?: string | null
           debt_amount: number
@@ -73,6 +75,7 @@ export type Database = {
         }
         Update: {
           city?: string | null
+          comments?: string | null
           created_at?: string
           creditor_name?: string | null
           debt_amount?: number
@@ -100,6 +103,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      tasks: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

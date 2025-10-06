@@ -8,11 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Database } from "@/integrations/supabase/types";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 type Client = Database["public"]["Tables"]["clients"]["Row"];
+type Task = Database["public"]["Tables"]["tasks"]["Row"];
 
 const statusColors: Record<string, string> = {
   "Новый": "bg-blue-500",
@@ -26,12 +29,14 @@ export default function ClientDetail() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [client, setClient] = useState<Client | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchClient();
+      fetchClientTasks();
     }
   }, [id]);
 
@@ -54,6 +59,21 @@ export default function ClientDetail() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchClientTasks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("client_id", id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setTasks(data || []);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
     }
   };
 
@@ -87,6 +107,7 @@ export default function ClientDetail() {
           has_registered_organization: client.has_registered_organization,
           status: client.status,
           stage: client.stage,
+          comments: client.comments,
         })
         .eq("id", id);
 
@@ -105,6 +126,29 @@ export default function ClientDetail() {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUpdateTaskStatus = async (taskId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from("tasks")
+        .update({ status: newStatus })
+        .eq("id", taskId);
+
+      if (error) throw error;
+      fetchClientTasks();
+      toast({
+        title: "Успешно",
+        description: "Статус задачи обновлен",
+      });
+    } catch (error) {
+      console.error("Error updating task:", error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить статус",
+        variant: "destructive",
+      });
     }
   };
 
@@ -426,6 +470,110 @@ export default function ClientDetail() {
                 }
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Comments Section */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Комментарии сотрудника</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              placeholder="Добавьте заметки о работе с клиентом..."
+              value={client.comments || ""}
+              onChange={(e) => setClient({ ...client, comments: e.target.value })}
+              className="min-h-[120px]"
+            />
+          </CardContent>
+        </Card>
+
+        {/* Tasks Section */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Задачи по клиенту</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/tasks")}
+              >
+                Управление задачами
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {tasks.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Нет задач по этому клиенту
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {tasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="p-4 rounded-lg border bg-card space-y-3"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1 flex-1">
+                        <h4 className="font-medium">{task.title}</h4>
+                        {task.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {task.description}
+                          </p>
+                        )}
+                      </div>
+                      {task.status === "done" && (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant="secondary"
+                          className={
+                            task.status === "todo"
+                              ? "bg-blue-500 text-white"
+                              : task.status === "in_progress"
+                              ? "bg-yellow-500 text-white"
+                              : "bg-green-500 text-white"
+                          }
+                        >
+                          {task.status === "todo"
+                            ? "К выполнению"
+                            : task.status === "in_progress"
+                            ? "В процессе"
+                            : "Завершено"}
+                        </Badge>
+                        {task.due_date && (
+                          <span className="text-xs text-muted-foreground">
+                            до {format(new Date(task.due_date), "dd.MM.yyyy", { locale: ru })}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        {task.status !== "done" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              handleUpdateTaskStatus(
+                                task.id,
+                                task.status === "todo" ? "in_progress" : "done"
+                              )
+                            }
+                          >
+                            {task.status === "todo"
+                              ? "Начать"
+                              : "Завершить"}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -93,7 +93,11 @@ export default function Dashboard() {
         <CardContent>
           <div className="space-y-4">
             {recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
+              <div 
+                key={index} 
+                className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0 cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
+                onClick={() => window.location.href = '/clients'}
+              >
                 <div className="h-2 w-2 rounded-full bg-primary mt-2" />
                 <div className="flex-1 space-y-1">
                   <p className="text-sm font-medium text-foreground">{activity.client}</p>

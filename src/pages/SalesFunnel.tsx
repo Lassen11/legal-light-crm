@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 const funnelStages = [
   {
@@ -50,6 +51,8 @@ const funnelStages = [
 ];
 
 export default function SalesFunnel() {
+  const navigate = useNavigate();
+  
   return (
     <div className="space-y-6">
       <div>
@@ -76,7 +79,8 @@ export default function SalesFunnel() {
                 {stage.clients.map((client, clientIndex) => (
                   <div
                     key={clientIndex}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                    onClick={() => navigate("/clients")}
                   >
                     <div className="space-y-1">
                       <p className="font-medium text-foreground">{client.name}</p>
