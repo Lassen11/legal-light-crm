@@ -8,12 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+   Dialog,
+   DialogContent,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+   DialogClose,
+ } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -41,7 +42,7 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [clients, setClients] = useState<ClientOption[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
   const [newTask, setNewTask] = useState<{
     title: string;
     description: string;
@@ -114,7 +115,7 @@ export default function Tasks() {
         description: "Задача создана",
       });
 
-      setIsDialogOpen(false);
+      
       setNewTask({
         title: "",
         description: "",
@@ -180,9 +181,9 @@ export default function Tasks() {
             Управляйте задачами с помощью Kanban доски и календаря
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog>
           <DialogTrigger asChild>
-            <Button>
+            <Button type="button">
               <Plus className="h-4 w-4 mr-2" />
               Создать задачу
             </Button>
@@ -264,7 +265,7 @@ export default function Tasks() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleCreateTask} className="w-full">
+              <Button type="button" onClick={handleCreateTask} className="w-full">
                 Создать задачу
               </Button>
             </div>
