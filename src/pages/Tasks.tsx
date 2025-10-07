@@ -216,16 +216,16 @@ export default function Tasks() {
               <div>
                 <Label htmlFor="client">Клиент</Label>
                 <Select
-                  value={newTask.client_id}
+                  value={newTask.client_id || "no-client"}
                   onValueChange={(value) =>
-                    setNewTask({ ...newTask, client_id: value })
+                    setNewTask({ ...newTask, client_id: value === "no-client" ? "" : value })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Выберите клиента" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Без клиента</SelectItem>
+                    <SelectItem value="no-client">Без клиента</SelectItem>
                     {clients.map((client) => (
                       <SelectItem key={client.id} value={client.id}>
                         {client.name}
