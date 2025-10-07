@@ -216,9 +216,9 @@ export default function Tasks() {
               <div>
                 <Label htmlFor="client">Клиент</Label>
                 <Select
-                  value={newTask.client_id || "no-client"}
+                  value={newTask.client_id ?? "no-client"}
                   onValueChange={(value) =>
-                    setNewTask({ ...newTask, client_id: value === "no-client" ? "" : value })
+                    setNewTask({ ...newTask, client_id: value === "no-client" ? undefined : value })
                   }
                 >
                   <SelectTrigger>
