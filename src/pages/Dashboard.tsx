@@ -56,17 +56,17 @@ const recentActivity = [
 
 export default function Dashboard() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-foreground">Обзор</h2>
         <p className="text-muted-foreground mt-1">Основные показатели вашей CRM системы</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {metrics.map((metric) => {
+        {metrics.map((metric, index) => {
           const Icon = metric.icon;
           return (
-            <Card key={metric.title} className="overflow-hidden transition-all hover:shadow-lg">
+            <Card key={metric.title} className="overflow-hidden transition-all hover:shadow-lg hover-scale animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -86,7 +86,7 @@ export default function Dashboard() {
         })}
       </div>
 
-      <Card>
+      <Card className="animate-scale-in" style={{ animationDelay: '0.6s' }}>
         <CardHeader>
           <CardTitle>Последняя активность</CardTitle>
         </CardHeader>
@@ -95,8 +95,9 @@ export default function Dashboard() {
             {recentActivity.map((activity, index) => (
               <div 
                 key={index} 
-                className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0 cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
+                className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0 cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-all animate-fade-in"
                 onClick={() => window.location.href = '/clients'}
+                style={{ animationDelay: `${0.7 + index * 0.1}s` }}
               >
                 <div className="h-2 w-2 rounded-full bg-primary mt-2" />
                 <div className="flex-1 space-y-1">

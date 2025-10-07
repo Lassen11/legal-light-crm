@@ -130,7 +130,7 @@ export default function Clients() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-foreground">Все клиенты</h2>
@@ -138,7 +138,7 @@ export default function Clients() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="hover-scale">
               <Plus className="h-4 w-4 mr-2" />
               Добавить клиента
             </Button>
@@ -202,7 +202,7 @@ export default function Clients() {
         </Dialog>
       </div>
 
-      <Card>
+      <Card className="animate-scale-in">
         <CardHeader>
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
@@ -214,7 +214,7 @@ export default function Clients() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="hover-scale">
               <Filter className="h-4 w-4" />
             </Button>
           </div>
@@ -235,11 +235,12 @@ export default function Clients() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredClients.map((client) => (
+                {filteredClients.map((client, index) => (
                   <TableRow
                     key={client.id}
-                    className="cursor-pointer hover:bg-muted/50"
+                    className="cursor-pointer hover:bg-muted/50 transition-all animate-fade-in"
                     onClick={() => navigate(`/clients/${client.id}`)}
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     <TableCell className="font-medium">{client.name}</TableCell>
                     <TableCell>

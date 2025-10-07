@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useNavigate } from "react-router-dom";
 
 const careStages = [
   {
@@ -65,16 +66,18 @@ const careStages = [
 ];
 
 export default function ClientCare() {
+  const navigate = useNavigate();
+  
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-foreground">Воронка заботы о клиентах</h2>
         <p className="text-muted-foreground mt-1">Отслеживайте все этапы процедуры банкротства</p>
       </div>
 
       <div className="grid gap-4">
-        {careStages.map((stage) => (
-          <Card key={stage.name} className="transition-all hover:shadow-lg">
+        {careStages.map((stage, stageIndex) => (
+          <Card key={stage.name} className="transition-all hover:shadow-lg animate-scale-in" style={{ animationDelay: `${stageIndex * 0.1}s` }}>
             <CardHeader>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
@@ -92,7 +95,9 @@ export default function ClientCare() {
                 {stage.clients.map((client, index) => (
                   <div
                     key={index}
-                    className="flex items-start justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                    className="flex items-start justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all cursor-pointer animate-fade-in hover-scale"
+                    onClick={() => navigate("/clients")}
+                    style={{ animationDelay: `${stageIndex * 0.1 + index * 0.05}s` }}
                   >
                     <div className="space-y-1 flex-1">
                       <p className="font-medium text-foreground">{client.name}</p>

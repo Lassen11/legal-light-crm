@@ -30,7 +30,9 @@ import { Database } from "@/integrations/supabase/types";
 
 type Task = Database["public"]["Tables"]["tasks"]["Row"];
 type Client = Database["public"]["Tables"]["clients"]["Row"];
+type Employee = Database["public"]["Tables"]["employees"]["Row"];
 type ClientOption = Pick<Client, "id" | "name">;
+type EmployeeOption = Pick<Employee, "id" | "name" | "position">;
 
 const statusConfig = {
   todo: { label: "К выполнению", color: "bg-blue-500" },
@@ -41,6 +43,7 @@ const statusConfig = {
 export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [clients, setClients] = useState<ClientOption[]>([]);
+  const [employees, setEmployees] = useState<EmployeeOption[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
   const [newTask, setNewTask] = useState<{
@@ -49,18 +52,21 @@ export default function Tasks() {
     status: "todo" | "in_progress" | "done";
     due_date: string;
     client_id: string;
+    employee_id: string;
   }>({
     title: "",
     description: "",
     status: "todo",
     due_date: "",
     client_id: "",
+    employee_id: "",
   });
   const { toast } = useToast();
 
   useEffect(() => {
     fetchTasks();
     fetchClients();
+    fetchEmployees();
   }, []);
 
   const fetchTasks = async () => {
@@ -96,6 +102,20 @@ export default function Tasks() {
     }
   };
 
+  const fetchEmployees = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("employees")
+        .select("id, name, position")
+        .order("name");
+
+      if (error) throw error;
+      setEmployees(data || []);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  };
+
   const handleCreateTask = async () => {
     try {
       const { error } = await supabase.from("tasks").insert([
@@ -105,6 +125,7 @@ export default function Tasks() {
           status: newTask.status,
           due_date: newTask.due_date || null,
           client_id: newTask.client_id || null,
+          employee_id: newTask.employee_id || null,
         },
       ]);
 
@@ -122,6 +143,7 @@ export default function Tasks() {
         status: "todo",
         due_date: "",
         client_id: "",
+        employee_id: "",
       });
       fetchTasks();
     } catch (error) {
@@ -157,6 +179,12 @@ export default function Tasks() {
     if (!clientId) return "Без клиента";
     const client = clients.find((c) => c.id === clientId);
     return client?.name || "Неизвестный клиент";
+  };
+
+  const getEmployeeName = (employeeId: string | null) => {
+    if (!employeeId) return "Не назначен";
+    const employee = employees.find((e) => e.id === employeeId);
+    return employee?.name || "Неизвестный сотрудник";
   };
 
   const getTasksForDate = (date: Date) => {
@@ -235,6 +263,27 @@ export default function Tasks() {
                 </Select>
               </div>
               <div>
+                <Label htmlFor="employee">Сотрудник</Label>
+                <Select
+                  value={newTask.employee_id ?? "no-employee"}
+                  onValueChange={(value) =>
+                    setNewTask({ ...newTask, employee_id: value === "no-employee" ? undefined : value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Выберите сотрудника" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no-employee">Не назначен</SelectItem>
+                    {employees.map((employee) => (
+                      <SelectItem key={employee.id} value={employee.id}>
+                        {employee.name} - {employee.position}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label htmlFor="due_date">Срок выполнения</Label>
                 <Input
                   id="due_date"
@@ -305,16 +354,21 @@ export default function Tasks() {
                             {task.description}
                           </p>
                         )}
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">
-                            {getClientName(task.client_id)}
-                          </span>
-                          {task.due_date && (
-                            <span className="text-muted-foreground flex items-center gap-1">
-                              <CalendarIcon className="h-3 w-3" />
-                              {format(new Date(task.due_date), "dd.MM.yyyy")}
+                        <div className="space-y-1 text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground">
+                              {getClientName(task.client_id)}
                             </span>
-                          )}
+                            {task.due_date && (
+                              <span className="text-muted-foreground flex items-center gap-1">
+                                <CalendarIcon className="h-3 w-3" />
+                                {format(new Date(task.due_date), "dd.MM.yyyy")}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-muted-foreground">
+                            Сотрудник: {getEmployeeName(task.employee_id)}
+                          </div>
                         </div>
                         <Select
                           value={task.status}

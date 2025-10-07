@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare, FileText } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -17,6 +17,7 @@ const items = [
   { title: "Воронка продаж", url: "/sales-funnel", icon: TrendingUp },
   { title: "Забота о клиентах", url: "/client-care", icon: HeartHandshake },
   { title: "Все клиенты", url: "/clients", icon: Users },
+  { title: "Делопроизводство", url: "/case-work", icon: FileText },
   { title: "Задачи", url: "/tasks", icon: CheckSquare },
 ];
 

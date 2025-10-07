@@ -54,7 +54,7 @@ export default function SalesFunnel() {
   const navigate = useNavigate();
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-foreground">Воронка продаж</h2>
         <p className="text-muted-foreground mt-1">Отслеживайте путь клиента от лида до заключения договора</p>
@@ -62,7 +62,7 @@ export default function SalesFunnel() {
 
       <div className="grid gap-4">
         {funnelStages.map((stage, index) => (
-          <Card key={stage.name} className="transition-all hover:shadow-lg">
+          <Card key={stage.name} className="transition-all hover:shadow-lg animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -79,8 +79,9 @@ export default function SalesFunnel() {
                 {stage.clients.map((client, clientIndex) => (
                   <div
                     key={clientIndex}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all cursor-pointer animate-fade-in hover-scale"
                     onClick={() => navigate("/clients")}
+                    style={{ animationDelay: `${index * 0.1 + clientIndex * 0.05}s` }}
                   >
                     <div className="space-y-1">
                       <p className="font-medium text-foreground">{client.name}</p>

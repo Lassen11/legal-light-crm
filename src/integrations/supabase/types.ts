@@ -104,12 +104,43 @@ export type Database = {
         }
         Relationships: []
       }
+      employees: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          position: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          position?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          position?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           client_id: string | null
           created_at: string
           description: string | null
           due_date: string | null
+          employee_id: string | null
           id: string
           status: string
           title: string
@@ -120,6 +151,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          employee_id?: string | null
           id?: string
           status?: string
           title: string
@@ -130,6 +162,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          employee_id?: string | null
           id?: string
           status?: string
           title?: string
@@ -141,6 +174,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
         ]
