@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -20,10 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, FileText, Edit, Eye } from "lucide-react";
+import { Plus, Edit, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Database } from "@/integrations/supabase/types";
+import ClientDetailDialog from "@/components/ClientDetailDialog";
 
 type Client = Database["public"]["Tables"]["clients"]["Row"];
 
@@ -41,6 +41,8 @@ export default function CaseWork() {
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [selectedStage, setSelectedStage] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [clientDialogOpen, setClientDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -119,6 +121,11 @@ export default function CaseWork() {
 
   const getClientsByStage = (stage: string) => {
     return clients.filter((client) => client.stage === stage);
+  };
+
+  const handleClientClick = (clientId: string) => {
+    setSelectedClientId(clientId);
+    setClientDialogOpen(true);
   };
 
   return (
@@ -213,8 +220,9 @@ export default function CaseWork() {
               filteredClients.map((client, index) => (
                 <Card
                   key={client.id}
-                  className="p-4 hover:shadow-md transition-all cursor-pointer animate-fade-in"
+                  className="p-4 hover:shadow-md transition-all animate-fade-in"
                   style={{ animationDelay: `${index * 0.05}s` }}
+                  onClick={() => handleClientClick(client.id)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 space-y-2">
@@ -245,7 +253,7 @@ export default function CaseWork() {
                         </p>
                       )}
                     </div>
-                    <div className="flex gap-2 ml-4">
+                    <div className="flex gap-2 ml-4" onClick={(e) => e.stopPropagation()}>
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="hover-scale">
@@ -296,6 +304,12 @@ export default function CaseWork() {
           </div>
         </CardContent>
       </Card>
+
+      <ClientDetailDialog
+        clientId={selectedClientId}
+        open={clientDialogOpen}
+        onOpenChange={setClientDialogOpen}
+      />
     </div>
   );
 }

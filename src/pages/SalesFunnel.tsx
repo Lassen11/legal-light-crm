@@ -1,19 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Search } from "lucide-react";
+import ClientDetailDialog from "@/components/ClientDetailDialog";
 
 const funnelStages = [
   {
     name: "Лиды",
     count: 45,
     clients: [
-      { name: "Антонов Сергей", phone: "+7 (999) 123-45-67", source: "Сайт" },
-      { name: "Белова Ольга", phone: "+7 (999) 234-56-78", source: "Реклама" },
-      { name: "Васильев Игорь", phone: "+7 (999) 345-67-89", source: "Рекомендация" },
+      { id: "1", name: "Антонов Сергей", phone: "+7 (999) 123-45-67", source: "Сайт" },
+      { id: "2", name: "Белова Ольга", phone: "+7 (999) 234-56-78", source: "Реклама" },
+      { id: "3", name: "Васильев Игорь", phone: "+7 (999) 345-67-89", source: "Рекомендация" },
     ],
     color: "bg-blue-500",
   },
@@ -21,8 +21,8 @@ const funnelStages = [
     name: "Консультация",
     count: 28,
     clients: [
-      { name: "Григорьев Павел", phone: "+7 (999) 456-78-90", source: "Сайт" },
-      { name: "Дмитриева Анна", phone: "+7 (999) 567-89-01", source: "Звонок" },
+      { id: "4", name: "Григорьев Павел", phone: "+7 (999) 456-78-90", source: "Сайт" },
+      { id: "5", name: "Дмитриева Анна", phone: "+7 (999) 567-89-01", source: "Звонок" },
     ],
     color: "bg-cyan-500",
   },
@@ -30,8 +30,8 @@ const funnelStages = [
     name: "Предложение",
     count: 18,
     clients: [
-      { name: "Егоров Максим", phone: "+7 (999) 678-90-12", source: "Реклама" },
-      { name: "Федорова Мария", phone: "+7 (999) 789-01-23", source: "Сайт" },
+      { id: "6", name: "Егоров Максим", phone: "+7 (999) 678-90-12", source: "Реклама" },
+      { id: "7", name: "Федорова Мария", phone: "+7 (999) 789-01-23", source: "Сайт" },
     ],
     color: "bg-indigo-500",
   },
@@ -39,7 +39,7 @@ const funnelStages = [
     name: "Договор",
     count: 12,
     clients: [
-      { name: "Зайцев Артем", phone: "+7 (999) 890-12-34", source: "Рекомендация" },
+      { id: "8", name: "Зайцев Артем", phone: "+7 (999) 890-12-34", source: "Рекомендация" },
     ],
     color: "bg-purple-500",
   },
@@ -47,17 +47,18 @@ const funnelStages = [
     name: "Клиент",
     count: 89,
     clients: [
-      { name: "Иванов Петр", phone: "+7 (999) 901-23-45", source: "Сайт" },
-      { name: "Козлова Елена", phone: "+7 (999) 012-34-56", source: "Реклама" },
+      { id: "9", name: "Иванов Петр", phone: "+7 (999) 901-23-45", source: "Сайт" },
+      { id: "10", name: "Козлова Елена", phone: "+7 (999) 012-34-56", source: "Реклама" },
     ],
     color: "bg-accent",
   },
 ];
 
 export default function SalesFunnel() {
-  const navigate = useNavigate();
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   
   const filteredStages = selectedStage
     ? funnelStages.filter((stage) => stage.name === selectedStage)
@@ -68,6 +69,11 @@ export default function SalesFunnel() {
     return stage.clients.filter((client) =>
       client.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+  };
+
+  const handleClientClick = (clientId: string) => {
+    setSelectedClientId(clientId);
+    setDialogOpen(true);
   };
   
   return (
@@ -132,12 +138,12 @@ export default function SalesFunnel() {
               <CardContent>
                 <div className="space-y-3">
                   {clients.map((client, clientIndex) => (
-                  <div
-                    key={clientIndex}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all cursor-pointer animate-fade-in hover-scale"
-                    onClick={() => navigate("/clients")}
-                    style={{ animationDelay: `${index * 0.1 + clientIndex * 0.05}s` }}
-                  >
+                    <div
+                      key={clientIndex}
+                      className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all cursor-pointer animate-fade-in hover-scale"
+                      onClick={() => handleClientClick(client.id)}
+                      style={{ animationDelay: `${index * 0.1 + clientIndex * 0.05}s` }}
+                    >
                     <div className="space-y-1">
                       <p className="font-medium text-foreground">{client.name}</p>
                       <p className="text-sm text-muted-foreground">{client.phone}</p>
@@ -156,6 +162,12 @@ export default function SalesFunnel() {
         );
         })}
       </div>
+
+      <ClientDetailDialog
+        clientId={selectedClientId}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Search } from "lucide-react";
+import ClientDetailDialog from "@/components/ClientDetailDialog";
 
 const careStages = [
   {
@@ -14,8 +14,8 @@ const careStages = [
     color: "bg-amber-500",
     progress: 30,
     clients: [
-      { name: "Лебедев Андрей", status: "Документы получены: 60%", daysInStage: 5 },
-      { name: "Медведева Ирина", status: "Документы получены: 40%", daysInStage: 8 },
+      { id: "11", name: "Лебедев Андрей", status: "Документы получены: 60%", daysInStage: 5 },
+      { id: "12", name: "Медведева Ирина", status: "Документы получены: 40%", daysInStage: 8 },
     ],
   },
   {
@@ -24,8 +24,8 @@ const careStages = [
     color: "bg-blue-500",
     progress: 45,
     clients: [
-      { name: "Новиков Олег", status: "Заявление готово на 80%", daysInStage: 3 },
-      { name: "Орлова Светлана", status: "Заявление готово на 50%", daysInStage: 6 },
+      { id: "13", name: "Новиков Олег", status: "Заявление готово на 80%", daysInStage: 3 },
+      { id: "14", name: "Орлова Светлана", status: "Заявление готово на 50%", daysInStage: 6 },
     ],
   },
   {
@@ -34,8 +34,8 @@ const careStages = [
     color: "bg-indigo-500",
     progress: 60,
     clients: [
-      { name: "Павлов Виктор", status: "Ожидание заседания", daysInStage: 12 },
-      { name: "Романова Татьяна", status: "Первое заседание назначено", daysInStage: 18 },
+      { id: "15", name: "Павлов Виктор", status: "Ожидание заседания", daysInStage: 12 },
+      { id: "16", name: "Романова Татьяна", status: "Первое заседание назначено", daysInStage: 18 },
     ],
   },
   {
@@ -44,8 +44,8 @@ const careStages = [
     color: "bg-purple-500",
     progress: 75,
     clients: [
-      { name: "Соколов Евгений", status: "Проведено 2 заседания", daysInStage: 25 },
-      { name: "Титова Юлия", status: "Проведено 3 заседания", daysInStage: 35 },
+      { id: "17", name: "Соколов Евгений", status: "Проведено 2 заседания", daysInStage: 25 },
+      { id: "18", name: "Титова Юлия", status: "Проведено 3 заседания", daysInStage: 35 },
     ],
   },
   {
@@ -54,7 +54,7 @@ const careStages = [
     color: "bg-pink-500",
     progress: 85,
     clients: [
-      { name: "Ушаков Владимир", status: "Оценка завершена", daysInStage: 40 },
+      { id: "19", name: "Ушаков Владимир", status: "Оценка завершена", daysInStage: 40 },
     ],
   },
   {
@@ -63,16 +63,17 @@ const careStages = [
     color: "bg-accent",
     progress: 100,
     clients: [
-      { name: "Фролов Дмитрий", status: "Процедура завершена", daysInStage: 180 },
-      { name: "Чернова Наталья", status: "Процедура завершена", daysInStage: 165 },
+      { id: "20", name: "Фролов Дмитрий", status: "Процедура завершена", daysInStage: 180 },
+      { id: "21", name: "Чернова Наталья", status: "Процедура завершена", daysInStage: 165 },
     ],
   },
 ];
 
 export default function ClientCare() {
-  const navigate = useNavigate();
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const filteredStages = selectedStage
     ? careStages.filter((stage) => stage.name === selectedStage)
@@ -83,6 +84,11 @@ export default function ClientCare() {
     return stage.clients.filter((client) =>
       client.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+  };
+
+  const handleClientClick = (clientId: string) => {
+    setSelectedClientId(clientId);
+    setDialogOpen(true);
   };
   
   return (
@@ -148,12 +154,12 @@ export default function ClientCare() {
               <CardContent>
                 <div className="space-y-3">
                   {clients.map((client, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all cursor-pointer animate-fade-in hover-scale"
-                    onClick={() => navigate("/clients")}
-                    style={{ animationDelay: `${stageIndex * 0.1 + index * 0.05}s` }}
-                  >
+                    <div
+                      key={index}
+                      className="flex items-start justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all cursor-pointer animate-fade-in hover-scale"
+                      onClick={() => handleClientClick(client.id)}
+                      style={{ animationDelay: `${stageIndex * 0.1 + index * 0.05}s` }}
+                    >
                     <div className="space-y-1 flex-1">
                       <p className="font-medium text-foreground">{client.name}</p>
                       <p className="text-sm text-muted-foreground">{client.status}</p>
@@ -174,6 +180,12 @@ export default function ClientCare() {
         );
         })}
       </div>
+
+      <ClientDetailDialog
+        clientId={selectedClientId}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }
