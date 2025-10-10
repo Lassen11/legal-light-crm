@@ -14,8 +14,8 @@ const careStages = [
     color: "bg-amber-500",
     progress: 30,
     clients: [
-      { id: "11", name: "Лебедев Андрей", status: "Документы получены: 60%", daysInStage: 5 },
-      { id: "12", name: "Медведева Ирина", status: "Документы получены: 40%", daysInStage: 8 },
+      { id: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d", name: "Лебедев Андрей", status: "Документы получены: 60%", daysInStage: 5 },
+      { id: "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e", name: "Медведева Ирина", status: "Документы получены: 40%", daysInStage: 8 },
     ],
   },
   {
@@ -24,8 +24,8 @@ const careStages = [
     color: "bg-blue-500",
     progress: 45,
     clients: [
-      { id: "13", name: "Новиков Олег", status: "Заявление готово на 80%", daysInStage: 3 },
-      { id: "14", name: "Орлова Светлана", status: "Заявление готово на 50%", daysInStage: 6 },
+      { id: "c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f", name: "Новиков Олег", status: "Заявление готово на 80%", daysInStage: 3 },
+      { id: "d4e5f6a7-b8c9-4d5e-1f2a-3b4c5d6e7f8a", name: "Орлова Светлана", status: "Заявление готово на 50%", daysInStage: 6 },
     ],
   },
   {
@@ -34,8 +34,8 @@ const careStages = [
     color: "bg-indigo-500",
     progress: 60,
     clients: [
-      { id: "15", name: "Павлов Виктор", status: "Ожидание заседания", daysInStage: 12 },
-      { id: "16", name: "Романова Татьяна", status: "Первое заседание назначено", daysInStage: 18 },
+      { id: "e5f6a7b8-c9d0-4e5f-2a3b-4c5d6e7f8a9b", name: "Павлов Виктор", status: "Ожидание заседания", daysInStage: 12 },
+      { id: "f6a7b8c9-d0e1-4f5a-3b4c-5d6e7f8a9b0c", name: "Романова Татьяна", status: "Первое заседание назначено", daysInStage: 18 },
     ],
   },
   {
@@ -44,8 +44,8 @@ const careStages = [
     color: "bg-purple-500",
     progress: 75,
     clients: [
-      { id: "17", name: "Соколов Евгений", status: "Проведено 2 заседания", daysInStage: 25 },
-      { id: "18", name: "Титова Юлия", status: "Проведено 3 заседания", daysInStage: 35 },
+      { id: "a7b8c9d0-e1f2-4a5b-4c5d-6e7f8a9b0c1d", name: "Соколов Евгений", status: "Проведено 2 заседания", daysInStage: 25 },
+      { id: "b8c9d0e1-f2a3-4b5c-5d6e-7f8a9b0c1d2e", name: "Титова Юлия", status: "Проведено 3 заседания", daysInStage: 35 },
     ],
   },
   {
@@ -54,7 +54,7 @@ const careStages = [
     color: "bg-pink-500",
     progress: 85,
     clients: [
-      { id: "19", name: "Ушаков Владимир", status: "Оценка завершена", daysInStage: 40 },
+      { id: "c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f", name: "Ушаков Владимир", status: "Оценка завершена", daysInStage: 40 },
     ],
   },
   {
@@ -63,8 +63,8 @@ const careStages = [
     color: "bg-accent",
     progress: 100,
     clients: [
-      { id: "20", name: "Фролов Дмитрий", status: "Процедура завершена", daysInStage: 180 },
-      { id: "21", name: "Чернова Наталья", status: "Процедура завершена", daysInStage: 165 },
+      { id: "d0e1f2a3-b4c5-4d5e-7f8a-9b0c1d2e3f4a", name: "Фролов Дмитрий", status: "Процедура завершена", daysInStage: 180 },
+      { id: "e1f2a3b4-c5d6-4e5f-8a9b-0c1d2e3f4a5b", name: "Чернова Наталья", status: "Процедура завершена", daysInStage: 165 },
     ],
   },
 ];
