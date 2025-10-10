@@ -35,6 +35,7 @@ export default function ClientDetailDialog({
 }: ClientDetailDialogProps) {
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +48,7 @@ export default function ClientDetailDialog({
     if (!clientId) return;
     
     setLoading(true);
+    setErrorMsg(null);
     try {
       const { data, error } = await supabase
         .from("clients")
@@ -56,8 +58,11 @@ export default function ClientDetailDialog({
 
       if (error) throw error;
       setClient(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching client:", error);
+      setClient(null);
+      const message = error?.code === "PGRST116" ? "Клиент не найден" : "Не удалось загрузить данные клиента";
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }
@@ -70,7 +75,7 @@ export default function ClientDetailDialog({
     }
   };
 
-  if (!client && !loading) return null;
+  
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -256,7 +261,11 @@ export default function ClientDetailDialog({
               </>
             )}
           </div>
-        ) : null}
+        ) : (
+          <div className="py-8 text-center">
+            <p className="text-muted-foreground">{errorMsg ?? "Клиент не найден или отсутствует в базе."}</p>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
