@@ -1,8 +1,11 @@
-import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare, FileText } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare, FileText, LogOut } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -11,6 +14,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useToast } from "@/hooks/use-toast";
 
 const items = [
   { title: "Дашборд", url: "/", icon: LayoutDashboard },
@@ -23,6 +27,24 @@ const items = [
 
 export function AppSidebar() {
   const { open } = useSidebar();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Ошибка выхода",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Вы вышли из системы",
+      });
+      navigate("/auth");
+    }
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -55,6 +77,16 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-5 w-5" />
+          {open && <span className="ml-2">Выйти</span>}
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }
