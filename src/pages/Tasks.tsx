@@ -79,7 +79,6 @@ export default function Tasks() {
       if (error) throw error;
       setTasks(data || []);
     } catch (error) {
-      console.error("Error fetching tasks:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось загрузить задачи",
@@ -98,7 +97,11 @@ export default function Tasks() {
       if (error) throw error;
       setClients(data || []);
     } catch (error) {
-      console.error("Error fetching clients:", error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить клиентов",
+        variant: "destructive",
+      });
     }
   };
 
@@ -112,7 +115,11 @@ export default function Tasks() {
       if (error) throw error;
       setEmployees(data || []);
     } catch (error) {
-      console.error("Error fetching employees:", error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить сотрудников",
+        variant: "destructive",
+      });
     }
   };
 
@@ -147,7 +154,6 @@ export default function Tasks() {
       });
       fetchTasks();
     } catch (error) {
-      console.error("Error creating task:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось создать задачу",
@@ -166,7 +172,6 @@ export default function Tasks() {
       if (error) throw error;
       fetchTasks();
     } catch (error) {
-      console.error("Error updating task:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось обновить статус задачи",

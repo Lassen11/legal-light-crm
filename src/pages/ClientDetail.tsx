@@ -51,7 +51,6 @@ export default function ClientDetail() {
       if (error) throw error;
       setClient(data);
     } catch (error) {
-      console.error("Error fetching client:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось загрузить данные клиента",
@@ -73,7 +72,11 @@ export default function ClientDetail() {
       if (error) throw error;
       setTasks(data || []);
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить задачи",
+        variant: "destructive",
+      });
     }
   };
 
@@ -118,7 +121,6 @@ export default function ClientDetail() {
         description: "Данные клиента обновлены",
       });
     } catch (error) {
-      console.error("Error saving client:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось сохранить данные",
@@ -143,7 +145,6 @@ export default function ClientDetail() {
         description: "Статус задачи обновлен",
       });
     } catch (error) {
-      console.error("Error updating task:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось обновить статус",

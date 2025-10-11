@@ -84,7 +84,6 @@ export default function Auth() {
           });
 
         if (roleError) {
-          console.error("Error assigning role:", roleError);
           toast({
             title: "Внимание",
             description: "Пользователь создан, но роль не была назначена",

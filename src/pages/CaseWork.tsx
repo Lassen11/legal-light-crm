@@ -64,7 +64,6 @@ export default function CaseWork() {
       if (error) throw error;
       setClients(data || []);
     } catch (error) {
-      console.error("Error fetching clients:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось загрузить клиентов",
@@ -105,7 +104,6 @@ export default function CaseWork() {
 
       fetchClients();
     } catch (error) {
-      console.error("Error updating stage:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось обновить стадию",
