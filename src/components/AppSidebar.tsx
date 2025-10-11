@@ -15,20 +15,39 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/use-user-role";
+import type { Database } from "@/integrations/supabase/types";
 
-const items = [
-  { title: "Дашборд", url: "/", icon: LayoutDashboard },
-  { title: "Воронка продаж", url: "/sales-funnel", icon: TrendingUp },
-  { title: "Забота о клиентах", url: "/client-care", icon: HeartHandshake },
-  { title: "Все клиенты", url: "/clients", icon: Users },
-  { title: "Делопроизводство", url: "/case-work", icon: FileText },
-  { title: "Задачи", url: "/tasks", icon: CheckSquare },
+type AppRole = Database["public"]["Enums"]["app_role"];
+
+const allItems = [
+  { title: "Дашборд", url: "/", icon: LayoutDashboard, roles: ["admin", "sales_manager", "care_manager", "lawyer", "arbitration_manager"] },
+  { title: "Воронка продаж", url: "/sales-funnel", icon: TrendingUp, roles: ["admin", "sales_manager"] },
+  { title: "Забота о клиентах", url: "/client-care", icon: HeartHandshake, roles: ["admin", "care_manager"] },
+  { title: "Все клиенты", url: "/clients", icon: Users, roles: ["admin"] },
+  { title: "Делопроизводство", url: "/case-work", icon: FileText, roles: ["admin", "lawyer"] },
+  { title: "Задачи", url: "/tasks", icon: CheckSquare, roles: ["admin", "sales_manager", "care_manager", "lawyer", "arbitration_manager"] },
 ];
 
 export function AppSidebar() {
   const { open } = useSidebar();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { role, loading } = useUserRole();
+
+  const items = allItems.filter(item => 
+    !role || item.roles.includes(role as AppRole)
+  );
+
+  if (loading) {
+    return (
+      <Sidebar collapsible="icon">
+        <SidebarContent>
+          <div className="p-4 text-sidebar-foreground/70">Загрузка...</div>
+        </SidebarContent>
+      </Sidebar>
+    );
+  }
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();

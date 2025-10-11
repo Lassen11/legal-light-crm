@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Search, Filter, Plus } from "lucide-react";
+import { Search, Filter, Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Database } from "@/integrations/supabase/types";
+import { useUserRole } from "@/hooks/use-user-role";
 
 type Client = Database["public"]["Tables"]["clients"]["Row"];
 
@@ -37,6 +38,7 @@ const statusColors: Record<string, string> = {
 export default function Clients() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAdmin } = useUserRole();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -124,6 +126,46 @@ export default function Clients() {
       toast({
         title: "Ошибка",
         description: "Не удалось добавить клиента",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteClient = async (clientId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!isAdmin) {
+      toast({
+        title: "Доступ запрещен",
+        description: "Только администраторы могут удалять клиентов",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!confirm("Вы уверены, что хотите удалить этого клиента?")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("clients")
+        .delete()
+        .eq("id", clientId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Успешно",
+        description: "Клиент удален",
+      });
+
+      fetchClients();
+    } catch (error) {
+      console.error("Error deleting client:", error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось удалить клиента",
         variant: "destructive",
       });
     }
@@ -232,6 +274,7 @@ export default function Clients() {
                   <TableHead>Статус</TableHead>
                   <TableHead>Дата начала</TableHead>
                   <TableHead className="text-right">Сумма долга</TableHead>
+                  {isAdmin && <TableHead className="text-right">Действия</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -266,6 +309,18 @@ export default function Clients() {
                     <TableCell className="text-right font-medium">
                       {formatCurrency(client.debt_amount)}
                     </TableCell>
+                    {isAdmin && (
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => handleDeleteClient(client.id, e)}
+                          className="hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
