@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Search, Filter, Plus, Trash2 } from "lucide-react";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +35,13 @@ const statusColors: Record<string, string> = {
   "В суде": "bg-amber-500",
   "Завершен": "bg-accent",
 };
+
+const clientSchema = z.object({
+  name: z.string().trim().min(2, "Имя должно содержать минимум 2 символа").max(100, "Имя слишком длинное"),
+  email: z.string().trim().email("Неверный формат email").max(255, "Email слишком длинный"),
+  phone: z.string().trim().min(10, "Неверный формат телефона").max(20, "Телефон слишком длинный"),
+  debt_amount: z.number().positive("Сумма долга должна быть положительной").max(1000000000, "Сумма долга слишком большая"),
+});
 
 export default function Clients() {
   const navigate = useNavigate();
@@ -64,7 +72,11 @@ export default function Clients() {
       if (error) throw error;
       setClients(data || []);
     } catch (error) {
-      console.error("Error fetching clients:", error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить клиентов",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -92,10 +104,20 @@ export default function Clients() {
   };
 
   const handleCreateClient = async () => {
-    if (!newClient.name || !newClient.phone || !newClient.email || !newClient.debt_amount) {
+    const debtAmount = parseFloat(newClient.debt_amount);
+    
+    const validation = clientSchema.safeParse({
+      name: newClient.name,
+      email: newClient.email,
+      phone: newClient.phone,
+      debt_amount: debtAmount,
+    });
+
+    if (!validation.success) {
+      const errors = validation.error.errors.map(err => err.message).join(", ");
       toast({
-        title: "Ошибка",
-        description: "Заполните все обязательные поля",
+        title: "Ошибка валидации",
+        description: errors,
         variant: "destructive",
       });
       return;
@@ -104,10 +126,10 @@ export default function Clients() {
     try {
       const { error } = await supabase.from("clients").insert([
         {
-          name: newClient.name,
-          phone: newClient.phone,
-          email: newClient.email,
-          debt_amount: parseFloat(newClient.debt_amount),
+          name: validation.data.name,
+          phone: validation.data.phone,
+          email: validation.data.email,
+          debt_amount: validation.data.debt_amount,
         },
       ]);
 
@@ -122,7 +144,6 @@ export default function Clients() {
       setNewClient({ name: "", phone: "", email: "", debt_amount: "" });
       fetchClients();
     } catch (error) {
-      console.error("Error creating client:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось добавить клиента",
@@ -162,7 +183,6 @@ export default function Clients() {
 
       fetchClients();
     } catch (error) {
-      console.error("Error deleting client:", error);
       toast({
         title: "Ошибка",
         description: "Не удалось удалить клиента",
