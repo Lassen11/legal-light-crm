@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare, FileText, LogOut } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare, FileText, LogOut, UserCircle } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/use-user-role";
+import { UserProfileDialog } from "@/components/UserProfileDialog";
 import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
@@ -96,7 +97,16 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="space-y-2">
+        <UserProfileDialog>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+          >
+            <UserCircle className="h-5 w-5" />
+            {open && <span className="ml-2">Профиль</span>}
+          </Button>
+        </UserProfileDialog>
         <Button
           variant="ghost"
           className="w-full justify-start"
