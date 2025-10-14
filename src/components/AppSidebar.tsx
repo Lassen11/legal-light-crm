@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare, FileText, LogOut, UserCircle } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Users, HeartHandshake, CheckSquare, FileText, LogOut, UserCircle, Shield } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ const allItems = [
   { title: "Все клиенты", url: "/clients", icon: Users, roles: ["admin"] },
   { title: "Делопроизводство", url: "/case-work", icon: FileText, roles: ["admin", "lawyer"] },
   { title: "Задачи", url: "/tasks", icon: CheckSquare, roles: ["admin", "sales_manager", "care_manager", "lawyer", "arbitration_manager"] },
+  { title: "Админ панель", url: "/admin", icon: Shield, roles: ["admin"] },
 ];
 
 export function AppSidebar() {

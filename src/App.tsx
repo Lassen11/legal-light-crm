@@ -12,6 +12,7 @@ import ClientDetail from "./pages/ClientDetail";
 import Tasks from "./pages/Tasks";
 import CaseWork from "./pages/CaseWork";
 import Auth from "./pages/Auth";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/clients/:id" element={<ClientDetail />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/case-work" element={<CaseWork />} />
+            <Route path="/admin" element={<AdminPanel />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

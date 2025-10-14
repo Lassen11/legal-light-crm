@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { User, Mail, Briefcase } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
@@ -37,6 +39,9 @@ export function UserProfileDialog({ children }: UserProfileDialogProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -99,6 +104,54 @@ export function UserProfileDialog({ children }: UserProfileDialogProps) {
       .slice(0, 2);
   };
 
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Ошибка",
+        description: "Пароли не совпадают",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Ошибка",
+        description: "Пароль должен содержать минимум 6 символов",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Успешно",
+        description: "Пароль изменен",
+      });
+
+      setNewPassword("");
+      setConfirmPassword("");
+      setIsChangingPassword(false);
+    } catch (error: any) {
+      toast({
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -150,6 +203,59 @@ export function UserProfileDialog({ children }: UserProfileDialogProps) {
                   </p>
                 </div>
               </div>
+            </div>
+
+            <div className="pt-4 border-t">
+              {!isChangingPassword ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setIsChangingPassword(true)}
+                  className="w-full"
+                >
+                  Изменить пароль
+                </Button>
+              ) : (
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">Новый пароль</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={loading}>
+                      {loading ? "Сохранение..." : "Сохранить"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setIsChangingPassword(false);
+                        setNewPassword("");
+                        setConfirmPassword("");
+                      }}
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         ) : (
